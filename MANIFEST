@@ -1,0 +1,16 @@
+Build.PL
+Changes
+lib/Egg/Plugin/MailSend.pm
+lib/Egg/Plugin/MailSend/CMD.pm
+lib/Egg/Plugin/MailSend/ISO2022JP.pm
+lib/Egg/Plugin/MailSend/SMTP.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/00_use.t
+t/01_mime_body.t
+t/02_iso2022jp.t
+t/03_attach.t
+t/89_pod.t
+t/test_mailsend.pl
