@@ -3,12 +3,12 @@ package Egg::Plugin::MailSend;
 # Copyright (C) 2007 Bee Flag, Corp, All Rights Reserved.
 # Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 #
-# $Id: MailSend.pm 75 2007-03-26 12:14:47Z lushe $
+# $Id: MailSend.pm 76 2007-03-26 13:01:19Z lushe $
 #
 use strict;
 use warnings;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 sub setup {
 	my($e)= @_;

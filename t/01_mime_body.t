@@ -3,7 +3,7 @@ use Test::More tests => 15;
 use lib qw{ . ./t };
 use File::Which;
 {
-  $ENV{EGG_TEST_MAIL_TO}   ||= 'mizuno@bomcity.com';
+  $ENV{EGG_TEST_MAIL_TO}   ||= '';
   $ENV{EGG_TEST_MAIL_FROM} ||= '';
   };
 require 'test_mailsend.pl';
