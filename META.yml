@@ -19,4 +19,4 @@ requires:
   MIME::Entity: 5.42
   Net::SMTP: 2.3
   UNIVERSAL::require: 0
-version: 0.01
+version: 0.02

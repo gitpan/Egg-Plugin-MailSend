@@ -13,4 +13,6 @@ t/01_mime_body.t
 t/02_iso2022jp.t
 t/03_attach.t
 t/89_pod.t
+t/98_perlcritic.t
+t/99_pod_coverage.t
 t/test_mailsend.pl
