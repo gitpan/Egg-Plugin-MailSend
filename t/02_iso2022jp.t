@@ -1,26 +1,34 @@
 
-use Test::More tests=> 8;
-use lib qw{ . ./t };
-use File::Which;
-eval "use Jcode";
-plan skip_all => "Jcode required for Japanese character encoder." if $@;
-{
-  $ENV{EGG_TEST_MAIL_TO}   = '';
-  $ENV{EGG_TEST_MAIL_FROM} = '';
-  };
-require 'test_mailsend.pl';
+use Test::More qw/no_plan/;
+use Egg::Helper::VirtualTest;
 
 SKIP: {
-	skip q{ Mail delivery command is not found. } unless which('sendmail');
+eval{ require Jcode };
+skip q{ Jcode module is not installed. } if $@;
 
-ok my $e= prepare
-  ({ egg=> [qw{ MailSend MailSend::ISO2022JP }] })->egg_virtual;
-isa_ok $e, 'Egg::Plugin::MailSend::ISO2022JP';
+my $v= Egg::Helper::VirtualTest->new( prepare => {
+  controller=> { egg_includes=> [qw/ MailSend MailSend::Encode::ISO2022JP /] },
+  config => {
+    plugin_mailsend=> {
+      handler  => 'CMD',
+      cmd_path => '/usr/sbin/sendmail',
+      default_from => 'dummy@dummy.domain',
+      default_to   => 'dummy@dummy.domain',
+      },
+    },
+  });
+
+$v->disable_stderr;
+
+ok my $e= $v->egg_context;
+can_ok $e->{namespace}, 'mail_encode';
 ok my $mail= $e->mail;
-ok $mail->subject('test-subject');
-ok $mail->body('test-body');
-ok my $body= $mail->__mime_body( $mail->to );
-like $body, qr{\n?Content\-Type\:\s+text/plain\;\s+charset=\"ISO\-2022\-JP\"};
-like $body, qr{\n?Content\-Transfer\-Encoding\:\s+7bit};
+ok $mail->subject('メール送信テスト');
+ok $mail->body('body');
+ok my $body= $mail->_mime_body( $mail->to );
+like $body, qr{\n?Content\-Type\:\s+text/plain\; +charset=\"ISO\-2022\-JP\"}s;
+like $body, qr{\n?Content\-Transfer\-Encoding\:\s+7bit}s;
+like $body, qr{\n?Subject\:\s+\=\?ISO\-2022\-JP\?}s;
 
   };
+

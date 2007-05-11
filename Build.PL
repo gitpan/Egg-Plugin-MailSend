@@ -8,17 +8,17 @@ my $builder = Module::Build->new(
   license           => 'perl',
 
   requires => {
-    'Egg::Release'         => 1.2001,
-    'Email::Valid'         => 0,
-    'File::Which'          => 0,
-    'Jcode'                => 0,
-    'MIME::Entity'         => 5.42,
-    'Net::SMTP'            => 2.30,
-    'UNIVERSAL::require'   => 0,
-    'Test::More'           => 0,
-    'Test::Pod'            => 0,
-#    'Test::Perl::Critic'  => 0,
-#    'Test::Pod::Coverage' => 0,
+    'Egg::Release' => 2.00,
+    'Email::Valid' => 0.17,
+    'File::Which'  => 0.05,
+    'Jcode'        => 2.06,
+    'MIME::Entity' => 5.42,
+    'Net::SMTP'    => 2.30,
+
+    'Test::Simple'          => 0,
+    'Test::Pod'             => 0,
+    'Test::Perl::Critic'    => 0,
+    'Test::Pod::Coverage'   => 0,
     },
 
   );

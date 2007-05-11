@@ -1,28 +1,29 @@
 
-use Test::More qw/no_plan/;
-use lib qw{ . ./t };
-use File::Which;
-{
-  $ENV{EGG_TEST_MAIL_TO}   = '';
-  $ENV{EGG_TEST_MAIL_FROM} = '';
-  };
-require 'test_mailsend.pl';
+use Test::More tests => 10;
+use Egg::Helper::VirtualTest;
 
-SKIP: {
-	skip q{ Mail delivery command is not found. } unless which('sendmail');
+my $v= Egg::Helper::VirtualTest->new;
+my $file= $v->yaml_load( join '', <DATA> );
+$v->prepare(
+  controller=> { egg_includes=> [qw/ MailSend /] },
+  config => {
+    plugin_mailsend=> {
+      handler  => 'CMD',
+      cmd_path => '/usr/sbin/sendmail',
+      default_from => 'dummy@dummy.domain',
+      default_to   => 'dummy@dummy.domain',
+      },
+    },
+  create_files => [$file],
+  );
 
-my $file= {
-  filename=> 'tmp/testfile.txt',
-  value   => 'test',
-  };
+$v->disable_stderr;
 
-my $test= prepare(0, 0, { create_files=> [$file] });
-ok my $e= $test->egg_virtual;
+ok my $e= $v->egg_context;
 ok my $mail= $e->mail;
-ok $mail->subject('test-subject');
 ok $mail->body('test-body');
-ok $mail->attach({ Path=> $test->project_root. "/$file->{filename}" });
-ok my $tmp= $mail->__mime_body( $mail->to );
+ok $mail->attach({ Path=> $v->project_root. "/$file->{filename}" });
+ok my $tmp= $mail->_mime_body( $mail->to );
 my($header, $body)= $tmp=~/^(.+?)\n\n(.+)/s;
 my($boundary)= $header=~m{\n?Content\-Type\:\s+multipart/mixed\;\s+boundary\=\"([^\"]+)};
 ok $boundary;
@@ -31,7 +32,10 @@ my @data= split /$boundary/, $body;
 is scalar(@data), 3;
 like $data[1], qr{\n?Content\-Type\:\s+text/plain\;\s+name\=\"testfile\.txt\"};
 like $data[1], qr{\n?Content\-Disposition\:\s+inline\;\s+filename\=\"testfile\.txt\"};
-like $data[1], qr{\n\ntest};
+like $data[1], qr{\n\nmail_test};
 
-  };
 
+__DATA__
+filename: tmp/testfile.txt
+value: |
+  mail_test

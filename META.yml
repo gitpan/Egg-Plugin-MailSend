@@ -1,8 +1,10 @@
-abstract: Plugin that offers mail delivery function for Egg.
+abstract: Mail is delivered for Egg Plugin.
 author: Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 build_requires: 
-  Test::More: 0
+  Test::Perl::Critic: 0
   Test::Pod: 0
+  Test::Pod::Coverage: 0
+  Test::Simple: 0
 distribution_type: module
 generated_by: Module::Install version 0.64
 license: perl
@@ -12,11 +14,10 @@ no_index:
     - inc
     - t
 requires: 
-  Egg::Release: 1.2001
-  Email::Valid: 0
-  File::Which: 0
-  Jcode: 0
+  Egg::Release: 2
+  Email::Valid: 0.17
+  File::Which: 0.05
+  Jcode: 2.06
   MIME::Entity: 5.42
   Net::SMTP: 2.3
-  UNIVERSAL::require: 0
-version: 0.03
+version: 2.00

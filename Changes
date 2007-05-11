@@ -1,5 +1,8 @@
 Revision history for Perl extension .
 
+2.00  2007/05/11
+	- Corresponded to Egg::Release v2.00.
+
 0.01  Fri Mar 23 04:55:58 2007
 	- original version; created by Egg::Helper::O::MakeMaker v0.04
 	   with module name Egg::Plugin::MailSend
