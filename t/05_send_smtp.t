@@ -1,12 +1,12 @@
 
-use Test::More qw/no_plan/;
+use Test::More tests=> 2;
 use Egg::Helper::VirtualTest;
 
 SKIP: {
-skip q{ Neither 'EGG_TO_ADDR' nor 'EGG_FROM_ADDR' of the environment variable are set. }
+skip q{ Neither 'EGG_TO_ADDR' nor 'EGG_FROM_ADDR' of the environment variable are set. }, 2
      if (! $ENV{EGG_TO_ADDR} or ! $ENV{EGG_FROM_ADDR});
 
-skip q{ 'EGG_SMTP_HOST' of the environment variable is not set. }
+skip q{ 'EGG_SMTP_HOST' of the environment variable is not set. }, 2
      if (! $ENV{EGG_SMTP_HOST});
 
 my $v= Egg::Helper::VirtualTest->new( prepare => {

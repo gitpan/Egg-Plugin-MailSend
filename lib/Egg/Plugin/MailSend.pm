@@ -2,8 +2,12 @@ package Egg::Plugin::MailSend;
 #
 # Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 #
-# $Id: MailSend.pm 130 2007-05-11 00:53:45Z lushe $
+# $Id: MailSend.pm 174 2007-06-27 05:36:22Z lushe $
 #
+use strict;
+use warnings;
+
+our $VERSION = '2.01';
 
 =head1 NAME
 
@@ -144,12 +148,6 @@ Address set to Bcc header.
 =head2 include_headers
 
 To add an original mail header, it sets it by the HASH reference.
-
-=cut
-use strict;
-use warnings;
-
-our $VERSION = '2.00';
 
 =head1 METHODS
 
