@@ -15,10 +15,10 @@ my $builder = Module::Build->new(
     'MIME::Entity' => 5.42,
     'Net::SMTP'    => 2.30,
 
-    'Test::Simple'          => 0,
-    'Test::Pod'             => 0,
-    'Test::Perl::Critic'    => 0,
-    'Test::Pod::Coverage'   => 0,
+    'Test::More'           => 0,
+    'Test::Pod'            => 0,
+    'Test::Perl::Critic'   => 0,
+    'Test::Pod::Coverage'  => 0,
     },
 
   );

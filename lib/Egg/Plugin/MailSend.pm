@@ -2,12 +2,12 @@ package Egg::Plugin::MailSend;
 #
 # Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>
 #
-# $Id: MailSend.pm 174 2007-06-27 05:36:22Z lushe $
+# $Id: MailSend.pm 207 2007-11-03 14:25:35Z lushe $
 #
 use strict;
 use warnings;
 
-our $VERSION = '2.01';
+our $VERSION = '2.02';
 
 =head1 NAME
 
@@ -151,27 +151,6 @@ To add an original mail header, it sets it by the HASH reference.
 
 =head1 METHODS
 
-=cut
-
-sub _setup {
-	my($e)= @_;
-	my $conf= $e->config->{plugin_mailsend} ||= {};
-	$conf->{default_from} || die q{ I want setup config 'default_from'. };
-	$conf->{default_subject} ||= 'Mail Subject.';
-	$conf->{x_mailer} ||= __PACKAGE__. " v$VERSION";
-	$conf->{handler}  ||= 'CMD';
-	$conf->{debug}    ||= 0;
-
-	my $pkg= __PACKAGE__."::$conf->{handler}";
-	$pkg->require or die $@;
-	$pkg.= '::handler';
-	$pkg->__setup($e, $conf);
-	no warnings 'redefine';
-	*_create_mail= sub { $pkg->new(@_) };
-
-	$e->next::method;
-}
-
 =head2 mail ( [SETUP_HASH] )
 
 The handler object to do Mail Sending is returned.
@@ -181,13 +160,6 @@ If SETUP_HASH is specified, the setting of default is overwrited.
 It tries to generate the object newly annulling the object before when
 SETUP_HASH is given though the same object uses and it is turned from now
 on when called once usually.
-
-=cut
-sub mail {
-	my $e= shift;
-	return ($e->{plugin_mailsend} ||= $e->_create_mail) unless @_;
-	$e->{plugin_mailsend}= $e->_create_mail(@_);
-}
 
 =head2 mail_encode
 
@@ -202,19 +174,6 @@ add some headers in addition. This method is used to solve it.
 
 Please refer to the document of L<Egg::Plugin::MailSend::ISO2022JP>.
 
-=cut
-sub mail_encode {
-	my($e, $mail, $body)= @_;
-	($mail->subject, $body, {});
-}
-
-package Egg::Plugin::MailSend::handler;
-use strict;
-use warnings;
-use MIME::Entity;
-use base qw/Egg::Base/;
-use Carp qw/croak/;
-
 =head2 HANDLER METHODS
 
 The module for the handler
@@ -224,36 +183,13 @@ It drinks and 2 kinds are prepared.
 
 Please refer to that document.
 
-=cut
-
-my @Names=
-  qw/to from cc bcc reply_to return_path subject body_header body_footer/;
-
-sub __setup {
-	my($class, $e, $conf)= @_;
-	$class->config($conf);
-	@_;
-}
-
 =head2 new
 
 Constructor for handler.
 
-=cut
-sub new {
-	my($class, $e)= splice @_, 0, 2;
-	$class->SUPER::new( $e, $class->_default_setup($e, @_) );
-}
-
 =head2 reset ( [SETUP_HASH] )
 
 The setting is initialized. SETUP_HASH overwrites the setting.
-
-=cut
-sub reset {
-	my $self= shift;
-	$self->params( $self->_default_setup($self->e, @_) );
-}
 
 =head2 send ( [PARAM_HASH] )
 
@@ -266,35 +202,11 @@ returned.
     ...
     );
 
-=cut
-sub send {
-	my $self = shift;
-	my %param= ( %{$self->params}, %{ $_[1] ? {@_}: ($_[0] || {}) } );
-	if ($param{to}) {
-		$self->to($param{to});
-	} else {
-		$self->to || croak q{ I want the to address. };
-	}
-	for my $method (qw{ body include_headers }, @Names[1..$#Names]) {
-		$self->$method($param{$method}) if $param{$method};
-	}
-	$self->__send_mail;
-}
-
 =head2 body ( [MAIL_BODY] )
 
 The content of mail can be registered beforehand.
 
 Please give MAIL_BODY SCALAR or ARRAY.
-
-=cut
-sub body {
-	my $self= shift;
-	return $self->params->{body} unless @_;
-	$self->params->{body}=
-	   (ref($_[0]) eq 'CODE' or ref($_[0]) eq 'ARRAY') ? $_[0]
-	  : ref($_[0]) eq 'SCALAR' ? [${$_[0]}]: [$_[0]];
-}
 
 =head2 to ( [TO_ADDR] )
 
@@ -343,6 +255,45 @@ The header buried under the content of mail can be registered beforehand.
 The footer buried under the content of mail can be registered beforehand.
 
 =cut
+
+sub _setup {
+	my($e)= @_;
+	my $conf= $e->config->{plugin_mailsend} ||= {};
+	$conf->{default_from} || die q{ I want setup config 'default_from'. };
+	$conf->{default_subject} ||= 'Mail Subject.';
+	$conf->{x_mailer} ||= __PACKAGE__. " v$VERSION";
+	$conf->{handler}  ||= 'CMD';
+	$conf->{debug}    ||= 0;
+
+	my $pkg= __PACKAGE__."::$conf->{handler}";
+	$pkg->require or die $@;
+	$pkg.= '::handler';
+	$pkg->__setup($e, $conf);
+	no warnings 'redefine';
+	*_create_mail= sub { $pkg->new(@_) };
+
+	$e->next::method;
+}
+sub mail {
+	my $e= shift;
+	return ($e->{plugin_mailsend} ||= $e->_create_mail) unless @_;
+	$e->{plugin_mailsend}= $e->_create_mail(@_);
+}
+sub mail_encode {
+	my($e, $mail, $body)= @_;
+	($mail->subject, $body, {});
+}
+
+package Egg::Plugin::MailSend::handler;
+use strict;
+use warnings;
+use MIME::Entity;
+use base qw/Egg::Base/;
+use Carp qw/croak/;
+
+my @Names=
+  qw/to from cc bcc reply_to return_path subject body_header body_footer/;
+
 {
 	no strict 'refs';  ## no critic
 	no warnings 'redefine';
@@ -356,6 +307,39 @@ The footer buried under the content of mail can be registered beforehand.
 	}
   };
 
+sub __setup {
+	my($class, $e, $conf)= @_;
+	$class->config($conf);
+	@_;
+}
+sub new {
+	my($class, $e)= splice @_, 0, 2;
+	$class->SUPER::new( $e, $class->_default_setup($e, @_) );
+}
+sub reset {
+	my $self= shift;
+	$self->params( $self->_default_setup($self->e, @_) );
+}
+sub send {
+	my $self = shift;
+	my %param= ( %{$self->params}, %{ $_[1] ? {@_}: ($_[0] || {}) } );
+	if ($param{to}) {
+		$self->to($param{to});
+	} else {
+		$self->to || croak q{ I want the to address. };
+	}
+	for my $method (qw{ body include_headers }, @Names[1..$#Names]) {
+		$self->$method($param{$method}) if $param{$method};
+	}
+	$self->__send_mail;
+}
+sub body {
+	my $self= shift;
+	return $self->params->{body} unless @_;
+	$self->params->{body}=
+	   (ref($_[0]) eq 'CODE' or ref($_[0]) eq 'ARRAY') ? $_[0]
+	  : ref($_[0]) eq 'SCALAR' ? [${$_[0]}]: [$_[0]];
+}
 sub _default_setup {
 	my($self, $e)= splice @_, 0, 2;
 	my %param= ( %{$self->config}, %{ $_[1] ? {@_}: ($_[0] || {}) } );

@@ -1,6 +1,6 @@
 ---
 name: Egg-Plugin-MailSend
-version: 2.01
+version: 2.02
 author:
   - 'Masatoshi Mizuno E<lt>lusheE<64>cpan.orgE<gt>'
 abstract: Mail is delivered for Egg Plugin.
@@ -14,14 +14,14 @@ requires:
   Jcode: 2.06
   MIME::Entity: 5.42
   Net::SMTP: 2.3
+  Test::More: 0
   Test::Perl::Critic: 0
   Test::Pod: 0
   Test::Pod::Coverage: 0
-  Test::Simple: 0
 provides:
   Egg::Plugin::MailSend:
     file: lib/Egg/Plugin/MailSend.pm
-    version: 2.01
+    version: 2.02
   Egg::Plugin::MailSend::CMD:
     file: lib/Egg/Plugin/MailSend/CMD.pm
     version: 2.00

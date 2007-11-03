@@ -13,7 +13,7 @@ requires 'Jcode'        => 2.06;
 requires 'MIME::Entity' => 5.42;
 requires 'Net::SMTP'    => 2.30;
 
-build_requires 'Test::Simple';
+build_requires 'Test::More';
 build_requires 'Test::Pod';
 build_requires 'Test::Perl::Critic';
 build_requires 'Test::Pod::Coverage';
